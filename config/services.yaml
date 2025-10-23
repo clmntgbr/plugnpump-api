@@ -1,0 +1,24 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind: ~
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Util/iterator_functions.php'
+
+    app.event.authentication_success_listener:
+        class: App\Listener\AuthenticationSuccessListener
+        tags:
+            - {
+                  name: kernel.event_listener,
+                  event: lexik_jwt_authentication.on_authentication_success,
+                  method: onAuthenticationSuccessResponse,
+              }
