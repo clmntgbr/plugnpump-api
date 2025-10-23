@@ -22,3 +22,7 @@ services:
                   event: lexik_jwt_authentication.on_authentication_success,
                   method: onAuthenticationSuccessResponse,
               }
+
+    # Alias the station finder to the PaginatedFinderInterface
+    FOS\ElasticaBundle\Finder\PaginatedFinderInterface:
+        alias: fos_elastica.finder.station

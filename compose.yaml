@@ -93,6 +93,34 @@ services:
             timeout: 10s
             retries: 5
             start_period: 30s
+
+    elasticsearch:
+        container_name: ${PROJECT_NAME}-elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+        restart: always
+        networks:
+            - substream-network
+        environment:
+            - cluster.name=elasticsearch-cluster
+            - node.name=elasticsearch-node1
+            - discovery.type=single-node
+            - ELASTIC_PASSWORD=admin
+            - xpack.security.enabled=true
+            - xpack.security.transport.ssl.enabled=false
+            - xpack.security.http.ssl.enabled=false
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+            nofile:
+                soft: 65536
+                hard: 65536
+        volumes:
+            - elasticsearch_data:/usr/share/elasticsearch/data
+        ports:
+            - "9004:9200"
+            - "9005:9300"
     
 networks:
   substream-network:
@@ -103,3 +131,4 @@ volumes:
     caddy_config:
     database_data:
     rabbitmq_data:
+    elasticsearch_data:

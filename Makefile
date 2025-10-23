@@ -103,3 +103,8 @@ php-cs-fixer:
 
 php-stan:
 	$(PHP) ./vendor/bin/phpstan analyse src -l $(or $(level), 8) --memory-limit=-1
+
+elastica:
+	$(PHP) php bin/console fos:elastica:delete
+	$(PHP) php bin/console fos:elastica:create
+	$(PHP) php bin/console fos:elastica:populate

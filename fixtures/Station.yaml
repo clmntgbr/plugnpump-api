@@ -1,0 +1,3 @@
+App\Entity\Station:
+  station_{1..1000}:
+    name: '<company()>'

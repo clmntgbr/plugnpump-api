@@ -4,8 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use App\Controller\RegisterController;
 use App\Entity\Trait\UuidTrait;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -20,8 +24,12 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(
     operations: [
         new Get(
-            normalizationContext: ['skip_null_values' => false, 'groups' => ['user:read']],
+            normalizationContext: ['groups' => ['user:read']],
             uriTemplate: '/me',
+        ),
+        new Post(
+            uriTemplate: '/register',
+            controller: RegisterController::class,
         ),
     ]
 )]
@@ -34,13 +42,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read'])]
     private ?string $email = null;
 
-    #[ORM\Column(type: Types::STRING)]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
     #[Groups(['user:read'])]
-    private string $firstname;
+    private ?string $firstname = null;
 
-    #[ORM\Column(type: Types::STRING)]
+    #[ORM\Column(type: Types::STRING, nullable: true)]
     #[Groups(['user:read'])]
-    private string $lastname;
+    private ?string $lastname = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    #[Groups(['user:read'])]
+    private ?string $picture = null;
 
     /**
      * @var list<string> The user roles
@@ -57,6 +69,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->id = Uuid::v4();
+    }
+
+    public static function create(
+        string $email,
+        string $plainPassword,
+        ?string $firstname = null,
+        ?string $lastname = null,
+        ?string $picture = null,
+    ): self {
+        $user = new self();
+        $user->firstname = $firstname;
+        $user->lastname = $lastname;
+        $user->picture = $picture;
+        $user->email = $email;
+        $user->plainPassword = $plainPassword;
+        $user->roles = ['ROLE_USER'];
+
+        return $user;
     }
 
     #[Groups(['user:read'])]
@@ -87,17 +117,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstname.' '.$this->lastname;
     }
 
-    public function setEmail(string $email): static
-    {
-        if (null !== $this->email && $this->email !== $email) {
-            return $this;
-        }
-
-        $this->email = $email;
-
-        return $this;
-    }
-
     /**
      * @see UserInterface
      */
@@ -118,16 +137,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @param list<string> $roles
-     */
-    public function setRoles(array $roles): static
-    {
-        $this->roles = $roles;
-
-        return $this;
-    }
-
-    /**
      * @see PasswordAuthenticatedUserInterface
      */
     public function getPassword(): ?string
@@ -135,23 +144,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
     public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
-    }
-
-    public function setPlainPassword(string $password): static
-    {
-        $this->plainPassword = $password;
-
-        return $this;
     }
 
     /**
@@ -167,6 +162,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstname;
     }
 
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
     public function setFirstname(string $firstname): static
     {
         $this->firstname = $firstname;
@@ -174,14 +174,56 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLastname(): ?string
-    {
-        return $this->lastname;
-    }
-
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function setEmail(string $email): static
+    {
+        if (null !== $this->email && $this->email !== $email) {
+            return $this;
+        }
+
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function setPlainPassword(string $password): static
+    {
+        $this->plainPassword = $password;
+
+        return $this;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(string $picture): static
+    {
+        $this->picture = $picture;
 
         return $this;
     }

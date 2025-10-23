@@ -1,0 +1,19 @@
+fos_elastica:
+    clients:
+        default:
+            hosts: ["http://elasticsearch:9200"]
+            username: "elastic"
+            password: "admin"
+    indexes:
+        station:
+            properties:
+                name: { type: text }
+                createdAt: { type: date }
+                updatedAt: { type: date }
+            persistence:
+                driver: orm
+                model: App\Entity\Station
+                provider: ~
+                finder: ~
+                elastica_to_model_transformer:
+                    ignore_missing: true
