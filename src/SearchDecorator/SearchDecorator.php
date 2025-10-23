@@ -14,6 +14,9 @@ class SearchDecorator
     private array $searchQueries = [
         Filter\GeoDistanceFilter::class,
         Filter\ServicesFilter::class,
+        Filter\CityFilter::class,
+        Filter\StateFilter::class,
+        Filter\PostalFilter::class,
     ];
 
     private SearchAbstract $search;
