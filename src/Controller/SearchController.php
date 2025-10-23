@@ -41,7 +41,7 @@ class SearchController extends AbstractController
             $searchRequest->itemsPerPage
         );
 
-        $normalizedResponse = $this->normalizer->normalize($response, null, ['groups' => ['station:read']]);
+        $normalizedResponse = $this->normalizer->normalize($response, null, ['groups' => ['station:search']]);
 
         return new JsonResponse($normalizedResponse, JsonResponse::HTTP_OK);
     }

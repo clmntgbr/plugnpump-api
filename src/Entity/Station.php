@@ -19,8 +19,12 @@ class Station
     use TimestampableEntity;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
-    #[Groups(['station:read'])]
+    #[Groups(['station:search'])]
     private string $name;
+
+    #[ORM\OneToOne(targetEntity: Address::class, cascade: ['persist', 'remove'])]
+    #[Groups(['station:search'])]
+    private Address $address;
 
     public function __construct()
     {
@@ -35,6 +39,18 @@ class Station
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getAddress(): Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(Address $address): self
+    {
+        $this->address = $address;
 
         return $this;
     }

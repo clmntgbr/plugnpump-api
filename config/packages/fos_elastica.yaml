@@ -10,6 +10,18 @@ fos_elastica:
                 name: { type: text }
                 createdAt: { type: date }
                 updatedAt: { type: date }
+                address:
+                    type: object
+                    properties:
+                        streetLine1: { type: text }
+                        streetLine2: { type: text }
+                        streetLine3: { type: text }
+                        city: { type: text }
+                        state: { type: text }
+                        postalCode: { type: text }
+                        country: { type: text }
+                        latitude: { type: float }
+                        longitude: { type: float }
             persistence:
                 driver: orm
                 model: App\Entity\Station

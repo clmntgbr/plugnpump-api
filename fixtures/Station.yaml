@@ -1,3 +1,4 @@
 App\Entity\Station:
-  station_{1..1000}:
+  station_{1..10000}:
     name: '<company()>'
+    address: '@address_<current()>'
