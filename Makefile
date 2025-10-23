@@ -108,3 +108,6 @@ elastica:
 	$(PHP) php bin/console fos:elastica:delete
 	$(PHP) php bin/console fos:elastica:create
 	$(PHP) php bin/console fos:elastica:populate
+
+gas-update:
+	$(PHP) php bin/console update:gas

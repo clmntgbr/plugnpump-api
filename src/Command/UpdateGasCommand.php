@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Service\Data\DataServiceInterface;
+use App\Service\Data\GasDataService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class UpdateGasCommand extends Command
 {
-    public function __construct()
+    public function __construct(
+        private DataServiceInterface $gasDataService
+    )
     {
         parent::__construct();
     }
@@ -25,6 +29,11 @@ class UpdateGasCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $zipFilePath = $this->gasDataService->download();
+        $xmlFilePath = $this->gasDataService->extract($zipFilePath);
+
+        
+        die;
         return Command::SUCCESS;
     }
 }

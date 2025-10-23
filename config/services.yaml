@@ -4,7 +4,8 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
-        bind: ~
+        bind:
+            string $gasUrl: '%env(resolve:GAS_URL)%'
 
     App\:
         resource: '../src/'

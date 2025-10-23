@@ -1,9 +1,9 @@
 fos_elastica:
     clients:
         default:
-            hosts: ["http://elasticsearch:9200"]
-            username: "elastic"
-            password: "admin"
+            hosts: ["%env(resolve:ELASTICSEARCH_HOST)%:%env(ELASTICSEARCH_PORT)%"]
+            username: "%env(ELASTICSEARCH_USERNAME)%"
+            password: "%env(ELASTICSEARCH_PASSWORD)%"
     indexes:
         station:
             properties:
