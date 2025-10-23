@@ -19,6 +19,12 @@ class SearchDecorator
 
     public function __construct(array $request)
     {
+        // Activer automatiquement le filtre géographique si latitude et longitude sont présentes
+        // et que geo_distance n'est pas explicitement défini à false
+        if (isset($request['latitude']) && isset($request['longitude']) && !isset($request['geo_distance'])) {
+            $request['geo_distance'] = true;
+        }
+
         $this->search = new Query\Search($request);
 
         foreach ($this->searchQueries as $q) {

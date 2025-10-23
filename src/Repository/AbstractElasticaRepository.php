@@ -137,26 +137,27 @@ class AbstractElasticaRepository extends Repository
     }
 
     /**
-     * Normalise le champ de tri (ajoute .keyword si nécessaire)
+     * Normalise le champ de tri (ajoute .keyword si nécessaire).
      */
     protected function normalizeSortField(string $field): string
     {
         $dateFields = ['startAt', 'createdAt', 'orderedAt', 'updatedAt'];
         $booleanFields = ['enabled'];
-        
+
         if (!in_array($field, array_merge($dateFields, $booleanFields), true)) {
             $field .= '.keyword';
         }
-        
+
         return $field;
     }
 
     /**
-     * Retourne le tri par défaut (peut être surchargé dans les classes filles)
+     * Retourne le tri par défaut (peut être surchargé dans les classes filles).
      */
     protected function getDefaultSort(Query $query): Query
     {
         $query->setSort(['createdAt' => 'desc']);
+
         return $query;
     }
 
@@ -202,5 +203,4 @@ class AbstractElasticaRepository extends Repository
 
         return $query;
     }
-
 }

@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\SearchDecorator\Query;
 
 use Elastica\Query\AbstractQuery;
-use Elastica\Query\GeoDistance;
 
 class GeoDistanceQuery extends AbstractQuery
 {
     public function __construct(
         private float $latitude,
         private float $longitude,
-        private int $distance = 100000
+        private int $distance = 100000,
     ) {
     }
 
@@ -20,9 +19,9 @@ class GeoDistanceQuery extends AbstractQuery
     {
         return [
             'geo_distance' => [
-                'distance' => $this->distance . 'm',
-                'address.location' => $this->latitude . ',' . $this->longitude
-            ]
+                'distance' => $this->distance.'m',
+                'address.location' => $this->latitude.','.$this->longitude,
+            ],
         ];
     }
 }

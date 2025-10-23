@@ -12,17 +12,19 @@ class GeoDistanceFilter extends SearchAbstract
     public function getQueries(): array
     {
         $queries = [];
-        
-        if (isset($this->request['latitude']) && isset($this->request['longitude'])) {
+
+        // Appliquer le filtre seulement si geo_distance est explicitement activé
+        if (isset($this->request['latitude']) && isset($this->request['longitude'])
+            && (true === $this->request['geo_distance'] || 'true' === $this->request['geo_distance'])) {
             $latitude = (float) $this->request['latitude'];
             $longitude = (float) $this->request['longitude'];
             $distance = (int) ($this->request['distance'] ?? 100000);
-            
+
             $queries[] = [
-                'query' => [new GeoDistanceQuery($latitude, $longitude, $distance)]
+                'query' => [new GeoDistanceQuery($latitude, $longitude, $distance)],
             ];
         }
-        
+
         return $queries;
     }
 

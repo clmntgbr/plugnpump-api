@@ -216,10 +216,10 @@ class Address
 
     public function getLocation(): ?string
     {
-        if ($this->latitude !== null && $this->longitude !== null) {
-            return $this->latitude . ',' . $this->longitude;
+        if (null !== $this->latitude && null !== $this->longitude) {
+            return $this->latitude.','.$this->longitude;
         }
-        
+
         return null;
     }
 }
