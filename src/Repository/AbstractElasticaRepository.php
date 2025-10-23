@@ -72,21 +72,19 @@ class AbstractElasticaRepository extends Repository
                 /** @var array<string, mixed> $qArray */
                 $qArray = $q->toArray();
 
-                if (
-                    isset($qArray['wildcard'])
-                    && is_array($qArray['wildcard'])
-                    && isset($qArray['wildcard']['name'])
-                    && is_array($qArray['wildcard']['name'])
-                    && isset($qArray['wildcard']['name']['value'])
-                ) {
-                    $searchString = trim($qArray['wildcard']['name']['value']);
-                    if ('' === $searchString) {
-                        continue;
+                // Gérer les wildcards génériques
+                if (isset($qArray['wildcard']) && is_array($qArray['wildcard'])) {
+                    foreach ($qArray['wildcard'] as $field => $wildcardData) {
+                        if (is_array($wildcardData) && isset($wildcardData['value'])) {
+                            $searchString = trim($wildcardData['value']);
+                            if ('' === $searchString) {
+                                continue;
+                            }
+
+                            $bool = $this->getWildCards($bool, $searchString, $field);
+                            continue 2;
+                        }
                     }
-
-                    $bool = $this->getWildCards($bool, $searchString);
-
-                    continue;
                 }
 
                 $bool->addMust($q);
@@ -109,11 +107,13 @@ class AbstractElasticaRepository extends Repository
 
         $query->setQuery($bool);
 
+        // Gérer le tri
         if (isset($request['order'])) {
             /** @var array<string, string> $requestOrder */
             $requestOrder = $request['order'];
-
-            return $this->sortQuery($query, $requestOrder);
+            $query = $this->sortQuery($query, $requestOrder);
+        } else {
+            $query = $this->getDefaultSort($query);
         }
 
         return $query;
@@ -122,23 +122,45 @@ class AbstractElasticaRepository extends Repository
     /**
      * @param array<string, string> $requestOrder
      */
-    private function sortQuery(Query $query, array $requestOrder): Query
+    protected function sortQuery(Query $query, array $requestOrder): Query
     {
         if (!empty($requestOrder)) {
             foreach ($requestOrder as $field => $order) {
-                if (!in_array($field, ['startAt', 'createdAt', 'orderedAt', 'updatedAt', 'enabled'], true)) {
-                    $field .= '.keyword';
-                }
+                $field = $this->normalizeSortField($field);
                 $query->addSort([$field => strtolower($order)]);
             }
         } else {
-            $query->setSort(['createdAt' => 'desc']);
+            $query = $this->getDefaultSort($query);
         }
 
         return $query;
     }
 
-    private function getWildCards(BoolQuery $bool, string $searchString): BoolQuery
+    /**
+     * Normalise le champ de tri (ajoute .keyword si nécessaire)
+     */
+    protected function normalizeSortField(string $field): string
+    {
+        $dateFields = ['startAt', 'createdAt', 'orderedAt', 'updatedAt'];
+        $booleanFields = ['enabled'];
+        
+        if (!in_array($field, array_merge($dateFields, $booleanFields), true)) {
+            $field .= '.keyword';
+        }
+        
+        return $field;
+    }
+
+    /**
+     * Retourne le tri par défaut (peut être surchargé dans les classes filles)
+     */
+    protected function getDefaultSort(Query $query): Query
+    {
+        $query->setSort(['createdAt' => 'desc']);
+        return $query;
+    }
+
+    protected function getWildCards(BoolQuery $bool, string $searchString, string $field = 'name'): BoolQuery
     {
         if (false !== strpos($searchString, ' ')) {
             $tokens = preg_split('/\s+/', $searchString);
@@ -149,12 +171,12 @@ class AbstractElasticaRepository extends Repository
             $subBool = new BoolQuery();
             foreach ($tokens as $token) {
                 if ('' !== $token) {
-                    $subBool->addMust(new Query\Wildcard('name', '*'.$token.'*'));
+                    $subBool->addMust(new Query\Wildcard($field, '*'.$token.'*'));
                 }
             }
             $bool->addMust($subBool);
         } else {
-            $wildcardQuery = new Query\Wildcard('name', '*'.$searchString.'*');
+            $wildcardQuery = new Query\Wildcard($field, '*'.$searchString.'*');
             $bool->addMust($wildcardQuery);
         }
 
@@ -180,4 +202,5 @@ class AbstractElasticaRepository extends Repository
 
         return $query;
     }
+
 }

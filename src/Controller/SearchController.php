@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Dto\SearchRequestDto;
 use App\Entity\User;
-use App\Repository\ElasticaRepository;
+use App\Repository\ElasticaStationRepository;
 use App\SearchDecorator\SearchDecorator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class SearchController extends AbstractController
 {
     public function __construct(
-        private readonly ElasticaRepository $elasticaRepository,
+        private readonly ElasticaStationRepository $elasticaStationRepository,
         private readonly Security $security,
         private readonly NormalizerInterface $normalizer,
     ) {
@@ -34,7 +34,7 @@ class SearchController extends AbstractController
         $parameters = $request->query->all();
         $search = new SearchDecorator($parameters);
 
-        $response = $this->elasticaRepository->search(
+        $response = $this->elasticaStationRepository->search(
             $user,
             $search->getSearch(),
             $searchRequest->page,

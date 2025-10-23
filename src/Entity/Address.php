@@ -213,4 +213,13 @@ class Address
 
         return $this;
     }
+
+    public function getLocation(): ?string
+    {
+        if ($this->latitude !== null && $this->longitude !== null) {
+            return $this->latitude . ',' . $this->longitude;
+        }
+        
+        return null;
+    }
 }

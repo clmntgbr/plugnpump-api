@@ -22,6 +22,8 @@ fos_elastica:
                         country: { type: text }
                         latitude: { type: float }
                         longitude: { type: float }
+                        location:
+                            type: geo_point
             persistence:
                 driver: orm
                 model: App\Entity\Station

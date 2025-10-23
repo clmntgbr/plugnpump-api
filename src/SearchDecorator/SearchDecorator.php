@@ -11,7 +11,9 @@ class SearchDecorator
     /**
      * @var array|string[]
      */
-    private array $searchQueries = [];
+    private array $searchQueries = [
+        Filter\GeoDistanceFilter::class,
+    ];
 
     private SearchAbstract $search;
 
