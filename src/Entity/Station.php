@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Dto\GasStationDto;
 use App\Entity\Trait\UuidTrait;
 use App\Repository\StationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,7 +29,7 @@ class Station
     use TimestampableEntity;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
-    #[Groups(['station:read'])]
+    #[Groups(['station:read', 'station:search'])]
     private string $stationId;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
@@ -49,12 +50,12 @@ class Station
 
     #[ORM\OneToMany(targetEntity: CurrentPrice::class, mappedBy: 'station')]
     #[ORM\OrderBy(['date' => 'DESC'])]
-    #[Groups(['price:read'])]
+    #[Groups(['price:read', 'station:read'])]
     private Collection $currentPrices;
 
     #[ORM\OneToMany(targetEntity: PriceHistory::class, mappedBy: 'station')]
     #[ORM\OrderBy(['date' => 'DESC'])]
-    #[Groups(['price:read'])]
+    #[Groups(['price:read', 'station:read'])]
     private Collection $priceHistories;
 
     public static function create(GasStationDto $gasStation): self
@@ -71,6 +72,8 @@ class Station
     {
         $this->id = Uuid::v4();
         $this->services = [];
+        $this->currentPrices = new ArrayCollection();
+        $this->priceHistories = new ArrayCollection();
     }
 
     public function getName(): string
