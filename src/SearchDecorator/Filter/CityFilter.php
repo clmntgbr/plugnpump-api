@@ -17,7 +17,7 @@ class CityFilter extends SearchAbstract
             $city = trim($this->request['city']);
             $termQuery = new Term(['address.city' => $city]);
             $this->elasticaRequest = [$termQuery];
-            
+
             $queries[$this->getName()] = [
                 'value' => $this->request[$this->getName()] ?? null,
                 'query' => $this->elasticaRequest,

@@ -14,12 +14,12 @@ class ServicesFilter extends SearchAbstract
         $queries = $this->query->getQueries();
 
         if (isset($this->request['services']) && is_array($this->request['services']) && !empty($this->request['services'])) {
-            $services = array_filter($this->request['services'], fn($service) => !empty(trim($service)));
-            
+            $services = array_filter($this->request['services'], fn ($service) => !empty(trim($service)));
+
             if (!empty($services)) {
                 $termsQuery = new Terms('services', $services);
                 $this->elasticaRequest = [$termsQuery];
-                
+
                 $queries[$this->getName()] = [
                     'value' => $this->request[$this->getName()] ?? null,
                     'query' => $this->elasticaRequest,

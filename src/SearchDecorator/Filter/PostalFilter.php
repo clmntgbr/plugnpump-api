@@ -17,7 +17,7 @@ class PostalFilter extends SearchAbstract
             $postal = trim($this->request['postal']);
             $termQuery = new Term(['address.postalCode' => $postal]);
             $this->elasticaRequest = [$termQuery];
-            
+
             $queries[$this->getName()] = [
                 'value' => $this->request[$this->getName()] ?? null,
                 'query' => $this->elasticaRequest,

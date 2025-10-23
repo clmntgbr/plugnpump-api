@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Dto\GasStationDto;
 use App\Entity\Trait\UuidTrait;
 use App\Repository\StationRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -13,7 +15,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: StationRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['station:read', 'address:read', 'price:read', 'type:read']],
+        ),
+    ],
+)]
 class Station
 {
     use UuidTrait;
@@ -34,6 +42,20 @@ class Station
     #[ORM\OneToOne(targetEntity: Address::class, cascade: ['persist', 'remove'])]
     #[Groups(['station:search', 'station:read'])]
     private Address $address;
+
+    #[ORM\OneToOne(targetEntity: GooglePlace::class, cascade: ['persist', 'remove'])]
+    #[Groups(['station:search', 'station:read'])]
+    private ?GooglePlace $googlePlace = null;
+
+    #[ORM\OneToMany(targetEntity: CurrentPrice::class, mappedBy: 'station')]
+    #[ORM\OrderBy(['date' => 'DESC'])]
+    #[Groups(['price:read'])]
+    private Collection $currentPrices;
+
+    #[ORM\OneToMany(targetEntity: PriceHistory::class, mappedBy: 'station')]
+    #[ORM\OrderBy(['date' => 'DESC'])]
+    #[Groups(['price:read'])]
+    private Collection $priceHistories;
 
     public static function create(GasStationDto $gasStation): self
     {
@@ -97,5 +119,25 @@ class Station
         $this->services = $services;
 
         return $this;
+    }
+
+    public function getCurrentPriceByTypeId(string $typeId): ?CurrentPrice
+    {
+        $currentPrice = $this->currentPrices->filter(fn (CurrentPrice $currentPrice) => (string) $currentPrice->getType()->getId() === $typeId)->first();
+        if (false === $currentPrice) {
+            return null;
+        }
+
+        return $currentPrice;
+    }
+
+    public function getPriceHistories(): Collection
+    {
+        return $this->priceHistories;
+    }
+
+    public function getCurrentPrices(): Collection
+    {
+        return $this->currentPrices;
     }
 }

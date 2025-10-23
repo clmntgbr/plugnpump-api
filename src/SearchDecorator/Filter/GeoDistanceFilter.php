@@ -21,7 +21,7 @@ class GeoDistanceFilter extends SearchAbstract
 
             $geoQuery = new GeoDistanceQuery($latitude, $longitude, $distance);
             $this->elasticaRequest = [$geoQuery];
-            
+
             $queries[$this->getName()] = [
                 'value' => $this->request[$this->getName()] ?? null,
                 'query' => $this->elasticaRequest,

@@ -43,9 +43,18 @@ class UpdateGasCommand extends Command
 
             $output->writeln(sprintf('Parsed %d gas stations', $gasStationList->getTotalCount()));
 
+            $ileDeFranceStations = array_filter($gasStationList->getStations(), function (GasStationDto $station) {
+                $postalCode = $station->getPostalCode();
+                return preg_match('/^(75|77|78|91|92|93|94|95)\d{3}$/', $postalCode);
+            });
+
+            $output->writeln(sprintf('Found %d stations in Île-de-France', count($ileDeFranceStations)));
+
             array_map(function (GasStationDto $station) {
                 $this->commandBus->dispatch(new CreateOrUpdateGasStationCommand($station));
-            }, $gasStationList->getStations());
+            }, $ileDeFranceStations);
+
+            $output->writeln('Gas prices updated successfully');
         } catch (\Exception $e) {
             $output->writeln(sprintf('Error: %s', $e->getMessage()));
 

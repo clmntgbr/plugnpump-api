@@ -17,7 +17,7 @@ class StateFilter extends SearchAbstract
             $state = trim($this->request['state']);
             $termQuery = new Term(['address.state' => $state]);
             $this->elasticaRequest = [$termQuery];
-            
+
             $queries[$this->getName()] = [
                 'value' => $this->request[$this->getName()] ?? null,
                 'query' => $this->elasticaRequest,
