@@ -1,12 +1,12 @@
-App\Entity\Address:
-  address_{1..10000}:
-    streetLine1: '<streetAddress()>'
-    streetLine2: '<secondaryAddress()>'
-    streetLine3: '<secondaryAddress()>'
-    city: '<city()>'
-    state: '<state()>'
-    postalCode: '<postcode()>'
-    country: '<countryCode()>'
-    latitude: '<latitude()>'
-    longitude: '<longitude()>'
-    additionalInfo: '<sentence()>'
+# App\Entity\Address:
+#   address_{1..1000}:
+#     streetLine1: '<streetAddress()>'
+#     streetLine2: '<secondaryAddress()>'
+#     streetLine3: '<secondaryAddress()>'
+#     city: '<city()>'
+#     state: '<state()>'
+#     postalCode: '<postcode()>'
+#     country: '<countryCode()>'
+#     latitude: '<latitude()>'
+#     longitude: '<longitude()>'
+#     additionalInfo: '<sentence()>'

@@ -1,2 +1,36 @@
 framework:
-    messenger: ~
+    messenger:
+        default_bus: command.bus
+        buses:
+            command.bus:
+                middleware:
+                    - validation
+                    - doctrine_transaction
+            sync.command.bus:
+                middleware:
+                    - validation
+                    - doctrine_transaction
+            async.command.bus:
+                middleware:
+                    - validation
+            query.bus:
+                middleware:
+                    - validation
+            event.bus:
+                default_middleware:
+                    enabled: true
+                    allow_no_handlers: false
+                    allow_no_senders: true
+                middleware:
+                    - validation
+        transports:
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    queues:
+                        async: ~
+                retry_strategy:
+                    max_retries: 0
+
+        routing:
+            'App\Shared\Application\Command\AsyncCommandInterface': async

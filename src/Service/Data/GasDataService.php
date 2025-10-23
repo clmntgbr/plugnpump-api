@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service\Data;
 
-use ZipArchive;
+use App\Dto\GasStationListDto;
 
 class GasDataService implements DataServiceInterface
 {
     public function __construct(
-        private string $gasUrl
+        private string $gasUrl,
+        private readonly GasXmlParser $xmlParser,
     ) {
     }
 
@@ -20,7 +21,7 @@ class GasDataService implements DataServiceInterface
             throw new \RuntimeException('Failed to download the zip file.');
         }
 
-        $zipFilePath = sys_get_temp_dir() . '/gas.zip';
+        $zipFilePath = sys_get_temp_dir().'/gas.zip';
         $result = file_put_contents($zipFilePath, $fileData);
         if (false === $result) {
             throw new \RuntimeException('Failed to save the zip file.');
@@ -36,7 +37,7 @@ class GasDataService implements DataServiceInterface
         }
 
         $zip = new \ZipArchive();
-        if ($zip->open($zipFilePath) !== true) {
+        if (true !== $zip->open($zipFilePath)) {
             throw new \RuntimeException('Failed to open ZIP file');
         }
 
@@ -47,11 +48,11 @@ class GasDataService implements DataServiceInterface
             }
 
             $tempDir = sys_get_temp_dir();
-            $extractedPath = $tempDir . '/' . $firstFileName;
-            $targetPath = $tempDir . '/gas.xml';
+            $extractedPath = $tempDir.'/'.$firstFileName;
+            $targetPath = $tempDir.'/gas.xml';
 
             $zip->extractTo($tempDir);
-            
+
             if (file_exists($extractedPath)) {
                 if (file_exists($targetPath)) {
                     unlink($targetPath);
@@ -63,5 +64,17 @@ class GasDataService implements DataServiceInterface
         }
 
         return $targetPath;
+    }
+
+    public function parse(string $xmlFilePath): GasStationListDto
+    {
+        return $this->xmlParser->parseXmlFile($xmlFilePath);
+    }
+
+    public function delete(string $filePath): void
+    {
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
     }
 }

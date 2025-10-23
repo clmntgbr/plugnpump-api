@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use App\Dto\GasStationDto;
 use App\Entity\Trait\UuidTrait;
 use App\Repository\AddressRepository;
 use Doctrine\DBAL\Types\Types;
@@ -92,6 +93,19 @@ class Address
     public function __construct()
     {
         $this->id = Uuid::v4();
+    }
+
+    public static function create(GasStationDto $gasStation): self
+    {
+        $address = new self();
+        $address->setStreetLine1($gasStation->getAddress());
+        $address->setCity($gasStation->getCity());
+        $address->setPostalCode($gasStation->getPostalCode());
+        $address->setCountry('fr');
+        $address->setLatitude($gasStation->getLatitude());
+        $address->setLongitude($gasStation->getLongitude());
+
+        return $address;
     }
 
     public function getStreetLine1(): ?string

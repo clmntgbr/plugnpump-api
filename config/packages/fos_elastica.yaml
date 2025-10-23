@@ -10,6 +10,7 @@ fos_elastica:
                 name: { type: text }
                 createdAt: { type: date }
                 updatedAt: { type: date }
+                services: { type: keyword }
                 address:
                     type: object
                     properties:

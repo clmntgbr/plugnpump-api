@@ -2,8 +2,10 @@
 
 namespace App\Command;
 
-use App\Service\Data\DataServiceInterface;
+use App\Core\Application\Command\CreateOrUpdateGasStationCommand;
+use App\Dto\GasStationDto;
 use App\Service\Data\GasDataService;
+use App\Shared\Application\Bus\CommandBusInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,9 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpdateGasCommand extends Command
 {
     public function __construct(
-        private DataServiceInterface $gasDataService
-    )
-    {
+        private GasDataService $gasDataService,
+        private CommandBusInterface $commandBus,
+    ) {
         parent::__construct();
     }
 
@@ -29,11 +31,30 @@ class UpdateGasCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $zipFilePath = $this->gasDataService->download();
-        $xmlFilePath = $this->gasDataService->extract($zipFilePath);
+        try {
+            $output->writeln('Downloading gas data...');
+            $zipFilePath = $this->gasDataService->download();
 
-        
-        die;
+            $output->writeln('Extracting gas data...');
+            $xmlFilePath = $this->gasDataService->extract($zipFilePath);
+
+            $output->writeln('Parsing gas data...');
+            $gasStationList = $this->gasDataService->parse($xmlFilePath);
+
+            $output->writeln(sprintf('Parsed %d gas stations', $gasStationList->getTotalCount()));
+
+            array_map(function (GasStationDto $station) {
+                $this->commandBus->dispatch(new CreateOrUpdateGasStationCommand($station));
+            }, $gasStationList->getStations());
+        } catch (\Exception $e) {
+            $output->writeln(sprintf('Error: %s', $e->getMessage()));
+
+            return Command::FAILURE;
+        } finally {
+            $this->gasDataService->delete($zipFilePath);
+            $this->gasDataService->delete($xmlFilePath);
+        }
+
         return Command::SUCCESS;
     }
 }

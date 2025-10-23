@@ -86,6 +86,9 @@ schema:
 regenerate:
 	$(PHP) php bin/console make:entity --regenerate App
 
+consume:
+	$(PHP) php bin/console messenger:consume async -vv
+
 entity:
 	$(PHP) php bin/console make:entity
 
