@@ -26,7 +26,7 @@ class Station
     {
         $this->id = Uuid::v4();
     }
-    
+
     public function getName(): string
     {
         return $this->name;
@@ -35,6 +35,7 @@ class Station
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 }

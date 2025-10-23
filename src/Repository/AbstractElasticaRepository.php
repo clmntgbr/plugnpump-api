@@ -31,7 +31,7 @@ class AbstractElasticaRepository extends Repository
      * "aggregations":mixed[]|null
      * }
      */
-    public function search(User $user, SearchInterface $search, int $page = 1, int $limit = 15, Query $query = null): array
+    public function search(User $user, SearchInterface $search, int $page = 1, int $limit = 15, ?Query $query = null): array
     {
         if (!$query) {
             $query = $this->getSearchQuery($user, $search);

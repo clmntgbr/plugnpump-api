@@ -11,13 +11,13 @@ class SearchRequestDto
     public function __construct(
         #[Assert\PositiveOrZero]
         public int $page = 1,
-        
+
         #[Assert\Positive]
         #[Assert\LessThanOrEqual(100)]
         public int $itemsPerPage = 15,
     ) {
     }
-    
+
     public static function fromQuery(array $query): self
     {
         return new self(

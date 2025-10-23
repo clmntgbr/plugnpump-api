@@ -8,8 +8,6 @@ use ApiPlatform\Metadata\Post;
 use App\Controller\RegisterController;
 use App\Entity\Trait\UuidTrait;
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;

@@ -4,16 +4,14 @@ namespace App\Controller;
 
 use App\Dto\SearchRequestDto;
 use App\Entity\User;
-use App\Repository\ElasticaOrderRepository;
 use App\Repository\ElasticaRepository;
 use App\SearchDecorator\SearchDecorator;
-use App\Shared\Domain\Response\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -31,20 +29,20 @@ class SearchController extends AbstractController
     public function searchStations(
         #[CurrentUser()] User $user,
         #[MapQueryString] SearchRequestDto $searchRequest,
-        Request $request
+        Request $request,
     ): JsonResponse {
         $parameters = $request->query->all();
         $search = new SearchDecorator($parameters);
 
         $response = $this->elasticaRepository->search(
-            $user, 
-            $search->getSearch(), 
-            $searchRequest->page, 
+            $user,
+            $search->getSearch(),
+            $searchRequest->page,
             $searchRequest->itemsPerPage
         );
 
         $normalizedResponse = $this->normalizer->normalize($response, null, ['groups' => ['station:read']]);
-        return new JsonResponse($normalizedResponse, JsonResponse::HTTP_OK);
 
+        return new JsonResponse($normalizedResponse, JsonResponse::HTTP_OK);
     }
 }
