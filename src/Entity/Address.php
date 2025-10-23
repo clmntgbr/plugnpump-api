@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Trait\UuidTrait;
 use App\Repository\AddressRepository;
 use Doctrine\DBAL\Types\Types;
@@ -13,7 +15,16 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            normalizationContext: ['groups' => ['address:read']],
+        ),
+        new Get(
+            normalizationContext: ['groups' => ['address:read']],
+        ),
+    ],
+)]
 #[ORM\Table()]
 #[ORM\Index(columns: ['postal_code'], name: 'idx_postal_code')]
 #[ORM\Index(columns: ['city'], name: 'idx_city')]
@@ -26,56 +37,56 @@ class Address
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Assert\NotBlank()]
     #[Assert\Length(max: 255)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $streetLine1 = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Assert\Length(max: 255)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $streetLine2 = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Assert\Length(max: 255)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $streetLine3 = null;
 
     #[ORM\Column(type: Types::STRING, length: 100)]
     #[Assert\NotBlank()]
     #[Assert\Length(max: 100)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $city = null;
 
     #[ORM\Column(type: Types::STRING, length: 100, nullable: true)]
     #[Assert\Length(max: 100)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $state = null;
 
     #[ORM\Column(type: Types::STRING, length: 20)]
     #[Assert\NotBlank()]
     #[Assert\Length(max: 20)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $postalCode = null;
 
     #[ORM\Column(type: Types::STRING, length: 2)]
     #[Assert\NotBlank()]
     #[Assert\Length(min: 2, max: 2)]
     #[Assert\Country]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $country = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 8, nullable: true)]
     #[Assert\Range(min: -90, max: 90)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $latitude = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 11, scale: 8, nullable: true)]
     #[Assert\Range(min: -180, max: 180)]
-    #[Groups(['station:search'])]
+    #[Groups(['station:search', 'address:read'])]
     private ?string $longitude = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Assert\Length(max: 1000)]
-    #[Groups(['station:search'])]
+    #[Groups(['address:read'])]
     private ?string $additionalInfo = null;
 
     public function __construct()
