@@ -31,12 +31,9 @@ class AbstractElasticaRepository extends Repository
      * "aggregations":mixed[]|null
      * }
      */
-    public function search(User $user, SearchInterface $search, int $page = 1, int $limit = 15, ?Query $query = null): array
+    public function search(SearchInterface $search, int $page = 1, int $limit = 15, ?Query $query = null): array
     {
-        if (!$query) {
-            $query = $this->getSearchQuery($user, $search);
-        }
-
+        $query = $this->getSearchQuery($search);
         $results = $this->finder->findPaginated($query);
         $results->setMaxPerPage($limit);
         $results->setCurrentPage($page);
@@ -58,7 +55,7 @@ class AbstractElasticaRepository extends Repository
         ];
     }
 
-    public function getSearchQuery(User $user, SearchInterface $search): Query
+    public function getSearchQuery(SearchInterface $search): Query
     {
         $queries = $search->getQueries();
         $bool = new BoolQuery();

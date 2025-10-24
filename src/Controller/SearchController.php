@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[Route('/api/search', name: 'app_search', methods: ['GET'])]
@@ -27,7 +26,6 @@ class SearchController extends AbstractController
 
     #[Route(path: '/stations', name: 'stations')]
     public function searchStations(
-        #[CurrentUser()] User $user,
         #[MapQueryString] SearchRequestDto $searchRequest,
         Request $request,
     ): JsonResponse {
@@ -35,7 +33,6 @@ class SearchController extends AbstractController
         $search = new SearchDecorator($parameters);
 
         $response = $this->elasticaStationRepository->search(
-            $user,
             $search->getSearch(),
             $searchRequest->page,
             $searchRequest->itemsPerPage

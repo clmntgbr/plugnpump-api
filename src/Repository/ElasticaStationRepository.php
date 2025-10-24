@@ -16,13 +16,12 @@ class ElasticaStationRepository extends AbstractElasticaRepository
         parent::__construct($finder);
     }
 
-    public function getSearchQuery(User $user, SearchInterface $search): Query
+    public function getSearchQuery(SearchInterface $search): Query
     {
-        $query = parent::getSearchQuery($user, $search);
+        $query = parent::getSearchQuery($search);
 
         $request = $search->getRequest();
 
-        // Si des coordonnées géographiques sont fournies, trier par distance
         if (isset($request['latitude']) && isset($request['longitude'])) {
             $query->setSort([
                 '_geo_distance' => [

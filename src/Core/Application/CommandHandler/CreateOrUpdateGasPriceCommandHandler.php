@@ -39,10 +39,19 @@ class CreateOrUpdateGasPriceCommandHandler
             return;
         }
 
-        if ($currentPrice->getDate() < $command->getGasPrice()->getUpdatedAt()) {
+        // If the price is updated and the value is different, create a new current price and price history
+        if ($command->getGasPrice()->getUpdatedAt() > $currentPrice->getDate() && $currentPrice->getValue() !== $command->getGasPrice()->getValue()) {
             $this->createCurrentPrice($command);
             $this->createPriceHistory($command);
             $this->currentPriceRepository->delete($currentPrice);
+
+            return;
+        }
+
+        // If the price is updated and the value is the same, update the current price date
+        if ($command->getGasPrice()->getUpdatedAt() > $currentPrice->getDate() && $currentPrice->getValue() === $command->getGasPrice()->getValue()) {
+            $currentPrice->setDate(new \DateTime($command->getGasPrice()->getUpdatedAt()));
+            $this->currentPriceRepository->save($currentPrice);
 
             return;
         }
