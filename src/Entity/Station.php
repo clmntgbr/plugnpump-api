@@ -126,7 +126,7 @@ class Station
 
     public function getCurrentPriceByTypeId(string $typeId): ?CurrentPrice
     {
-        $currentPrice = $this->currentPrices->filter(fn (CurrentPrice $currentPrice) => (string) $currentPrice->getType()->getId() === $typeId)->first();
+        $currentPrice = $this->currentPrices->filter(fn (CurrentPrice $currentPrice) => (string) $currentPrice->getType()->getTypeId() === $typeId)->first();
         if (false === $currentPrice) {
             return null;
         }
