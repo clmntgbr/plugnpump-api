@@ -42,6 +42,19 @@ test: ## Start tests with phpunit, pass the parameter "c=" to add options to php
 	@$(eval c ?=)
 	@$(DOCKER_COMP) exec -e APP_ENV=test php bin/phpunit $(c)
 
+env:
+	$(COMPOSER) dump-env dev
+
+## Composer install
+install:
+	$(PHP) composer install
+
+## Composer update
+update:
+	$(PHP) composer update
+
+fabric: 
+	$(SYMFONY) messenger:setup-transports
 
 ## —— Composer 🧙 ——————————————————————————————————————————————————————————————
 composer: ## Run composer, pass the parameter "c=" to run a given command, example: make composer c='req symfony/orm-pack'
