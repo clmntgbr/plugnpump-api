@@ -41,7 +41,7 @@ framework:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
                     queues:
-                        async: ~
+                        async_priority: ~
                 retry_strategy:
                     max_retries: 0
 

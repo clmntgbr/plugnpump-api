@@ -1,0 +1,34 @@
+fos_elastica:
+    clients:
+        default:
+            hosts: ["%env(resolve:ELASTICSEARCH_HOST)%:%env(ELASTICSEARCH_PORT)%"]
+            username: "%env(ELASTICSEARCH_USERNAME)%"
+            password: "%env(ELASTICSEARCH_PASSWORD)%"
+    indexes:
+        station:
+            properties:
+                name: { type: text }
+                createdAt: { type: date }
+                updatedAt: { type: date }
+                services: { type: keyword }
+                address:
+                    type: object
+                    properties:
+                        streetLine1: { type: text }
+                        streetLine2: { type: text }
+                        streetLine3: { type: text }
+                        city: { type: text }
+                        state: { type: text }
+                        postalCode: { type: text }
+                        country: { type: text }
+                        latitude: { type: float }
+                        longitude: { type: float }
+                        location:
+                            type: geo_point
+            persistence:
+                driver: orm
+                model: App\Entity\Station
+                provider: ~
+                finder: ~
+                elastica_to_model_transformer:
+                    ignore_missing: true

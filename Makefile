@@ -73,10 +73,29 @@ sf: ## List all Symfony commands or pass the parameter "c=" to run a given comma
 cc: c=c:c ## Clear the cache
 cc: sf
 
-
+jwt:
+	$(SYMFONY) lexik:jwt:generate-keypair --skip-if-exists
 
 db: 
 	$(SYMFONY) doctrine:database:drop -f --if-exists
 	$(SYMFONY) doctrine:database:create
 	$(SYMFONY) doctrine:schema:update -f
 	$(SYMFONY) hautelook:fixtures:load -n
+
+fixture:
+	$(SYMFONY) hautelook:fixtures:load -n
+	$(SYMFONY) fos:elastica:delete
+	$(SYMFONY) fos:elastica:create
+	$(SYMFONY) fos:elastica:populate
+
+schema:
+	$(SYMFONY) doctrine:schema:update -f
+
+regenerate:
+	$(SYMFONY) make:entity --regenerate App
+
+consume:
+	$(SYMFONY) messenger:consume async_priority async -vv
+
+gas:
+	$(SYMFONY) gas:update
